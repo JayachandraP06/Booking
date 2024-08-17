@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Seat {
 
-    private String seatId;
-    private Passenger passenger;
-    private SeatStatus status;
-
+  private String seatId;
+  private Passenger passenger;
+  private SeatStatus status;
 }

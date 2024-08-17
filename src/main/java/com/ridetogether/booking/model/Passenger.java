@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Passenger {
-    private String name;
-    private int age;
-    private String gender;
+  private String name;
+  private int age;
+  private String gender;
 }
