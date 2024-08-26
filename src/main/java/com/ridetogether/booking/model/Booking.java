@@ -28,4 +28,5 @@ public class Booking {
   private List<Seat> bookedSeats;
   private BigDecimal amount;
   private BookingStatus status;
+  private String paymentId;
 }

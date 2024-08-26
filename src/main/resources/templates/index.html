@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Form</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="mb-4">Payment Form</h2>
+    <form>
+        <div class="form-group">
+            <label for="source">Source</label>
+            <input type="text" class="form-control" id="source" placeholder="Enter source">
+        </div>
+        <div class="form-group">
+            <label for="destination">Destination</label>
+            <input type="text" class="form-control" id="destination" placeholder="Enter destination">
+        </div>
+        <div class="form-group">
+            <label for="scheduleId">Schedule ID</label>
+            <input type="text" class="form-control" id="scheduleId" placeholder="Enter schedule ID">
+        </div>
+        <div class="form-group">
+            <label for="vehicleId">Vehicle ID</label>
+            <input type="text" class="form-control" id="vehicleId" placeholder="Enter vehicle ID">
+        </div>
+        <div class="form-group">
+            <label for="travelDate">Travel Date</label>
+            <input type="datetime-local" class="form-control" id="travelDate">
+        </div>
+        <div class="form-group">
+            <label for="bookingDate">Booking Date</label>
+            <input type="datetime-local" class="form-control" id="bookingDate">
+        </div>
+        <div class="form-group">
+            <label for="userId">User ID</label>
+            <input type="text" class="form-control" id="userId" placeholder="Enter user ID">
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="number" step="0.01" class="form-control" id="amount" placeholder="Enter amount">
+        </div>
+
+        <button type="button" onclick="book()" class="btn btn-primary">BOOK</button>
+    </form>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    async function book()
+    {
+    console.log("payment started");
+    const response=await fetch('http://localhost:8082/bookings',
+    {
+    method : 'POST',
+    headers : {
+    'content-type' :'application/json' },
+    body : JSON.stringify({
+    source:document.getElementById('source').value,
+    destination:document.getElementById('destination').value,
+    scheduleId:document.getElementById('scheduleId').value,
+    vehicleId:document.getElementById('vehicleId').value,
+    travelDate:document.getElementById('travelDate').value,
+    bookingDate:document.getElementById('bookingDate').value,
+    userId:document.getElementById('userId').value,
+    amount:document.getElementById('amount').value
+
+
+    })
+    }
+    );
+    const order= await response.json();
+
+    console.log(order);
+
+    var options=
+    {
+    "key": "rzp_test_XpxKF3NGslGh1t",
+    "amount": order.amount,
+    "currency": "INR",
+    "name": "PJ",
+    "description": "car booking payment",
+    "order_id": order.paymentId,
+    "receipt": "jayachandra.p12@gmail.com",
+    "callback_url":"http://localhost:8082/bookings/update/"+order.paymentId,
+    "prefill": {
+        "name": "pj",
+        "email": "jayachandra.p12@gmail.com",
+        "contact": "9502098831"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+
+    };
+    var razorpay=new Razorpay(options);
+    var success=razorpay.open();
+
+
+
+
+}
+
+const verifyPayment = async (paymentResponse) => {
+    try {
+        const verificationResponse = await fetch('/ap', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(paymentResponse)
+        });
+        const verificationResult = await verificationResponse.json();
+
+        if (verificationResult.success) {
+            console.log('Payment successful and verified.');
+            // Handle success scenario (e.g., display success message, update order status in UI)
+        } else {
+            console.log('Payment verification failed.');
+            // Handle failure scenario (e.g., display error message, retry payment)
+        }
+    } catch (error) {
+        console.error('Error verifying payment:', error);
+    }
+};
+
+</script>
+</body>
+</html>

@@ -24,4 +24,5 @@ public class BookingDTO {
   private List<Seat> bookedSeats;
   private BigDecimal amount;
   private BookingStatus status;
+  private String userEmail;
 }
